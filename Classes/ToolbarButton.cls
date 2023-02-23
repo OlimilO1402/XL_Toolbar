@@ -15,17 +15,17 @@ Option Explicit
 Private m_Toolbar As Toolbar
 Private m_Key     As String
 Private WithEvents mImage As MSForms.Image
-Private Const MouseOverBackColor As Long = &HF3D7B3 ' = RGB(179, 215, 243)
-Private Const MouseDownBackColor As Long = &HEBBC80 ' = RGB(128, 188, 235)
-Private Const ImageBorderColor   As Long = &HD77800 ' = RGB(0, 120, 215)
+Attribute mImage.VB_VarHelpID = -1
+Private Const MouseOverBorderColor As Long = &HEBBC80 ' = RGB(128, 188, 235)
+Private Const MouseOverBackColor   As Long = &HF3D7B3 ' = RGB(179, 215, 243)
+Private Const MouseDownBorderColor As Long = &HD77800 ' = RGB(  0, 120, 215)
+Private Const MouseDownBackColor   As Long = &HEBBC80 ' = RGB(128, 188, 235)
 Private m_IsMouseDown As Boolean
-Private m_IsMouseOver As Boolean
 Private m_MouseDownX As Single
 Private m_MouseDownY As Single
 
 Friend Sub New_(aImage As MSForms.Image, aKey As String)
     Set mImage = aImage: m_Key = aKey
-    mImage.BorderColor = ImageBorderColor ' &HD77800 'RGB(0, 120, 215)
 End Sub
 
 Friend Property Set Owner(ByVal Value As Toolbar)
@@ -36,65 +36,55 @@ Public Property Get Key() As String
     Key = m_Key
 End Property
 
-Public Sub Deselect()
-    'm_IsMouseDown = False
-    'm_IsMouseOver = False
-    mImage.BorderStyle = fmBorderStyleNone
-    mImage.BackStyle = fmBackStyleTransparent
-    'UpdateView
+Friend Sub Deselect()
+    DrawButton_Clear
 End Sub
 
 Private Sub mImage_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     If Button = XlMouseButton.xlPrimaryButton Then
         m_IsMouseDown = True
-        'UpdateView
         m_MouseDownX = X
         m_MouseDownY = Y
-        mImage.BackStyle = fmBackStyleOpaque
-        mImage.BackColor = MouseDownBackColor '&HEBBC80 'RGB(128, 188, 235)
+        DrawButton_MouseDown
     End If
 End Sub
 
 Private Sub mImage_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     m_Toolbar.SelectButton Me
-    'm_IsMouseOver = True
-    'UpdateView
-    If m_IsMouseDown Then
-        If (Abs(m_MouseDownX - X) > 25) Or (Abs(m_MouseDownY - Y) > 25) Then
-            'm_IsMouseDown = False
-        Else
-            Exit Sub
-        End If
+    If m_IsMouseDown And (Abs(m_MouseDownX - X) < 25 And Abs(m_MouseDownY - Y) < 25) Then
+        DrawButton_MouseDown
+        Exit Sub
     End If
-    mImage.BorderStyle = fmBorderStyleSingle
-    mImage.BackStyle = fmBackStyleOpaque
-    mImage.BackColor = MouseOverBackColor '&HF3D7B3 'RGB(179, 215, 243)
+    DrawButton_MouseOver
 End Sub
 
 Private Sub mImage_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     If Button = XlMouseButton.xlPrimaryButton Then
         m_IsMouseDown = False
         Deselect
-        If (Abs(m_MouseDownX - X) > 25) Or (Abs(m_MouseDownY - Y) > 25) Then Exit Sub
-        m_Toolbar.OnClick Me
+        If (Abs(m_MouseDownX - X) < 25 And Abs(m_MouseDownY - Y) < 25) Then
+            m_Toolbar.OnClick Me
+        End If
     End If
 End Sub
-'
-'Private Sub UpdateView()
-'    If m_IsMouseOver Then
-'        mImage.BorderStyle = fmBorderStyleSingle
-'        mImage.BackStyle = fmBackStyleOpaque
-'        mImage.BackColor = MouseOverBackColor '&HF3D7B3 'RGB(179, 215, 243)
-'    End If
-'    If m_IsMouseDown Then
-'        mImage.BackStyle = fmBackStyleOpaque
-'        mImage.BackColor = MouseDownBackColor '&HEBBC80 'RGB(128, 188, 235)
-'    ElseIf Not m_IsMouseOver Then
-'        mImage.BorderStyle = fmBorderStyleNone
-'        mImage.BackStyle = fmBackStyleTransparent
-'    End If
-'    'mImage.BorderColor = &H80000003  '&H80000002 'Inaktive Titelleiste
-'    'mImage.BorderColor
-'    'mImage.BorderStyle
-'    'mImage.BackColor
-'End Sub
+
+Private Sub DrawButton_Clear()
+    mImage.BorderStyle = fmBorderStyleNone
+    mImage.BackStyle = fmBackStyleTransparent
+End Sub
+
+Private Sub DrawButton_MouseOver()
+    mImage.BorderStyle = fmBorderStyleSingle
+    mImage.BorderColor = MouseOverBorderColor ' &HEBBC80 'RGB(128, 188, 235)
+    mImage.BackStyle = fmBackStyleOpaque
+    mImage.BackColor = MouseOverBackColor     ' &HF3D7B3 'RGB(179, 215, 243)
+End Sub
+
+Private Sub DrawButton_MouseDown()
+    mImage.BorderStyle = fmBorderStyleSingle
+    mImage.BorderColor = MouseDownBorderColor ' &HD77800 'RGB(0, 120, 215)
+    mImage.BackStyle = fmBackStyleOpaque
+    mImage.BackColor = MouseDownBackColor     ' &HF3D7B3 'RGB(179, 215, 243)
+End Sub
+
+

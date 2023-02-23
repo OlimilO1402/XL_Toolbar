@@ -1,7 +1,8 @@
+Attribute VB_Name = "Module1"
 Option Explicit
 
-Public Function Toolbar(aFrame As MSForms.Frame) As Toolbar
-    Set Toolbar = New Toolbar: Toolbar.New_ aFrame
+Public Function Toolbar(Owner As UserForm, aFrame As MSForms.Frame) As Toolbar
+    Set Toolbar = New Toolbar: Toolbar.New_ Owner, aFrame
 End Function
 
 Public Function ToolbarButton(aImg As MSForms.Image, aKey As String) As ToolbarButton
@@ -11,3 +12,4 @@ End Function
 Public Sub ShowUserForm()
     UserForm1.Show
 End Sub
+
