@@ -12,17 +12,27 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private mOwner     As MSForms.UserForm
-Private m_Buttons  As Collection
-Private WithEvents mPanel As MSForms.Frame
+#If VBA Then
+    Private mOwner            As MSForms.UserForm
+    Private WithEvents mPanel As MSForms.Frame
 Attribute mPanel.VB_VarHelpID = -1
+#Else
+    Private mOwner            As Form
+    Private WithEvents mPanel As Frame
+Attribute mPanel.VB_VarHelpID = -1
+#End If
+Private m_Buttons  As Collection
 Public Event Click(Btn As ToolbarButton)
 
 Private Sub Class_Initialize()
     Set m_Buttons = New Collection
 End Sub
 
+#If VBA Then
 Friend Sub New_(Owner As UserForm, aFrame As MSForms.Frame)
+#Else
+Friend Sub New_(Owner As Form, aFrame As Frame)
+#End If
     Set mOwner = Owner: Set mPanel = aFrame
 End Sub
 
@@ -45,7 +55,15 @@ Public Sub SelectButton(aBtn As ToolbarButton)
     Next
 End Sub
 
+Public Sub DeselectAll()
+    SelectButton Nothing
+End Sub
+
+#If VBA Then
 Private Sub mPanel_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+#Else
+Private Sub mPanel_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+#End If
     SelectButton Nothing
 End Sub
 
