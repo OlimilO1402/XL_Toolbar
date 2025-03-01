@@ -12,6 +12,11 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
+'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize
+'AppsUseLightTheme=0
+'ColorPrevalence=0
+'EnableTransparency=1
+'SystemUsesLightTheme=0
 Private Enum EMouseButtons
     MButtonNone = 0    ' 0                                     'XlMouseButton.xlNoButton
     MButtonLeft = 1    ' 1 MouseButtonConstants.vbLeftButton   'XlMouseButton.xlPrimaryButton
@@ -31,9 +36,11 @@ End Enum
     Private WithEvents mImage As MSForms.Image
 Attribute mImage.VB_VarHelpID = -1
 #Else
-    Private WithEvents mImage As PictureBox
-Attribute mImage.VB_VarHelpID = -1
-    Private mBorder As Shape
+    Private WithEvents mImgMouseEventListener As Image
+Attribute mImgMouseEventListener.VB_VarHelpID = -1
+    Private mShpBorder          As Shape
+    Private WithEvents mImgIcon As Image
+Attribute mImgIcon.VB_VarHelpID = -1
 #End If
 Private m_Toolbar As Toolbar
 Private m_Key     As String
@@ -68,7 +75,7 @@ End Sub
 #If VBA Then
 Private Sub mImage_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
 #Else
-Private Sub mImage_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub mImgMouseEventListener_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 #End If
     If Button = EMouseButtons.MButtonLeft Then
         m_IsMouseDown = True
@@ -81,7 +88,7 @@ End Sub
 #If VBA Then
 Private Sub mImage_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
 #Else
-Private Sub mImage_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub mImgMouseEventListener_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 #End If
     m_Toolbar.SelectButton Me
     If m_IsMouseDown And (Abs(m_MouseDownX - X) < 25 And Abs(m_MouseDownY - Y) < 25) Then
@@ -94,7 +101,7 @@ End Sub
 #If VBA Then
 Private Sub mImage_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
 #Else
-Private Sub mImage_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub mImgMouseEventListener_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 #End If
     If Button = EMouseButtons.MButtonLeft Then
         m_IsMouseDown = False
@@ -107,20 +114,20 @@ End Sub
 
 Private Sub DrawButton_Clear()
     mBorder.BorderStyle = BorderStyleConstants.vbTransparent 'fmBorderStyleNone
-    mBorder.BackStyle = fmBackStyleTransparent
+    mBorder.BackStyle = 0 'fmBackStyleTransparent
 End Sub
 
 Private Sub DrawButton_MouseOver()
     mBorder.BorderStyle = BorderStyleConstants.vbBSSolid 'fmBorderStyle.fmBorderStyleSingle
     mBorder.BorderColor = MouseOverBorderColor ' &HEBBC80 'RGB(128, 188, 235)
-    mBorder.BackStyle = fmBackStyleOpaque
+    mBorder.BackStyle = 1 'fmBackStyleOpaque
     mBorder.BackColor = MouseOverBackColor     ' &HF3D7B3 'RGB(179, 215, 243)
 End Sub
 
 Private Sub DrawButton_MouseDown()
     mBorder.BorderStyle = BorderStyleConstants.vbBSSolid 'fmBorderStyleSingle
     mBorder.BorderColor = MouseDownBorderColor ' &HD77800 'RGB(0, 120, 215)
-    mBorder.BackStyle = Backstyleconstants.fmBackStyleOpaque
+    mBorder.BackStyle = 1 'Backstyleconstants.fmBackStyleOpaque
     mBorder.BackColor = MouseDownBackColor     ' &HF3D7B3 'RGB(179, 215, 243)
 End Sub
 

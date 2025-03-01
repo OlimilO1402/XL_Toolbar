@@ -17,9 +17,11 @@ Option Explicit
     Private WithEvents mPanel As MSForms.Frame
 Attribute mPanel.VB_VarHelpID = -1
 #Else
-    Private mOwner            As Form
-    Private WithEvents mPanel As Frame
+    Private mOwner              As Form
+    Private WithEvents mPanel   As Frame
 Attribute mPanel.VB_VarHelpID = -1
+    Private WithEvents mBackImg As Image
+Attribute mBackImg.VB_VarHelpID = -1
 #End If
 Private m_Buttons  As Collection
 Public Event Click(Btn As ToolbarButton)
